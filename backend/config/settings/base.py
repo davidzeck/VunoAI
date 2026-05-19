@@ -98,3 +98,32 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TIMEZONE = "Africa/Nairobi"
 CELERY_TASK_TRACK_STARTED = True
+
+EMAIL_BACKEND       = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST          = "smtp.gmail.com"
+EMAIL_PORT          = 587
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL  = config("EMAIL_HOST_USER", default="noreply@vunoh.com")
+
+from celery.schedules import crontab  # noqa: E402
+
+CELERY_BEAT_SCHEDULE = {
+    "auto-escalate-stale-tasks": {
+        "task": "celery_tasks.scheduled.auto_escalate_stale",
+        "schedule": 300,
+    },
+    "rescore-pending-high-risk": {
+        "task": "celery_tasks.scheduled.rescore_pending",
+        "schedule": 3600,
+    },
+    "daily-digest": {
+        "task": "celery_tasks.scheduled.daily_digest",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "retry-failed-tasks": {
+        "task": "celery_tasks.scheduled.retry_api_failures",
+        "schedule": crontab(hour=0, minute=0),
+    },
+}

@@ -7,6 +7,7 @@ class Task(models.Model):
         IN_PROGRESS = "in_progress", "In Progress"
         COMPLETED   = "completed",   "Completed"
         FAILED      = "failed",      "Failed"
+        REJECTED    = "rejected",    "Rejected"
 
     task_code           = models.CharField(max_length=20, unique=True, db_index=True)
     customer_request    = models.TextField()
@@ -60,9 +61,12 @@ class GeneratedMessage(models.Model):
         EMAIL    = "email",    "Email"
         SMS      = "sms",      "SMS"
 
-    task    = models.ForeignKey(Task, related_name="messages", on_delete=models.CASCADE)
-    channel = models.CharField(max_length=20, choices=Channel.choices)
-    content = models.TextField()
+    task       = models.ForeignKey(Task, related_name="messages", on_delete=models.CASCADE)
+    channel    = models.CharField(max_length=20, choices=Channel.choices)
+    content    = models.TextField()
+    recipient  = models.CharField(max_length=200, blank=True)
+    sent_at    = models.DateTimeField(null=True, blank=True)
+    send_error = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.task.task_code} — {self.channel}"
@@ -80,3 +84,28 @@ class StatusHistory(models.Model):
 
     def __str__(self):
         return f"{self.task.task_code}: {self.from_status} → {self.to_status}"
+
+
+class DigestReport(models.Model):
+    generated_at    = models.DateTimeField(auto_now_add=True)
+    high_risk_count = models.IntegerField(default=0)
+    failed_count    = models.IntegerField(default=0)
+    task_codes      = models.JSONField(default=list)
+
+    class Meta:
+        ordering = ["-generated_at"]
+
+    def __str__(self):
+        return f"Digest {self.generated_at:%Y-%m-%d %H:%M} — {self.high_risk_count} high-risk"
+
+
+class TaskOutcome(models.Model):
+    task                      = models.OneToOneField(Task, on_delete=models.CASCADE, related_name="outcome")
+    recorded_at               = models.DateTimeField(auto_now_add=True)
+    human_overrode_assignment = models.BooleanField(default=False)
+    final_assignment          = models.CharField(max_length=100)
+    ai_was_correct            = models.BooleanField(null=True)
+    override_note             = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.task.task_code} outcome — correct={self.ai_was_correct}"

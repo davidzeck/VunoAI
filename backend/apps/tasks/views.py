@@ -1,9 +1,10 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 
-from .models import Task, StatusHistory, GeneratedMessage
+from .models import DigestReport, Task, StatusHistory, GeneratedMessage, TaskOutcome
 from .serializers import (
     TaskListSerializer, TaskDetailSerializer,
     StatusUpdateSerializer, GeneratedMessageSerializer,
@@ -91,6 +92,19 @@ class TaskViewSet(viewsets.GenericViewSet):
         task.status = new_status
         task.save(update_fields=["status", "updated_at"])
 
+        # Record outcome when a human closes the task
+        if new_status in [Task.Status.COMPLETED, Task.Status.FAILED]:
+            human_assignment = request.data.get("final_assignment", task.employee_assignment)
+            TaskOutcome.objects.update_or_create(
+                task=task,
+                defaults={
+                    "final_assignment": human_assignment,
+                    "human_overrode_assignment": human_assignment != task.employee_assignment,
+                    "ai_was_correct": human_assignment == task.employee_assignment,
+                    "override_note": note,
+                },
+            )
+
         return Response({"task_code": task.task_code, "status": task.status})
 
     @action(detail=True, methods=["get"], url_path="messages")
@@ -98,3 +112,63 @@ class TaskViewSet(viewsets.GenericViewSet):
         task = get_object_or_404(Task, task_code=task_code)
         msgs = GeneratedMessage.objects.filter(task=task)
         return Response(GeneratedMessageSerializer(msgs, many=True).data)
+
+    @action(detail=True, methods=["post"], url_path="messages/send")
+    def send_message(self, request, task_code=None):
+        task      = get_object_or_404(Task, task_code=task_code)
+        channel   = request.data.get("channel")
+        recipient = request.data.get("recipient", "").strip()
+
+        if channel not in ["whatsapp", "email"]:
+            return Response({"error": "channel must be whatsapp or email"}, status=status.HTTP_400_BAD_REQUEST)
+        if not recipient:
+            return Response({"error": "recipient is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        msg = GeneratedMessage.objects.filter(task=task, channel=channel).first()
+        if not msg:
+            return Response({"error": "No message found for this channel."}, status=status.HTTP_404_NOT_FOUND)
+
+        msg.recipient = recipient
+        msg.save(update_fields=["recipient"])
+
+        from celery_tasks.send_message import send_channel_message
+        send_channel_message.delay(msg.id)
+
+        return Response({"detail": f"Message queued for {channel}.", "channel": channel})
+
+    @action(detail=False, methods=["get"], url_path="reports/calibration")
+    def calibration(self, request):
+        outcomes   = TaskOutcome.objects.select_related("task").all()
+        total      = outcomes.count()
+        correct    = outcomes.filter(ai_was_correct=True).count()
+        overridden = outcomes.filter(human_overrode_assignment=True).count()
+        by_intent  = list(
+            outcomes.values("task__intent").annotate(
+                count=Count("id"),
+                correct=Count("id", filter=Q(ai_was_correct=True)),
+            )
+        )
+        return Response({
+            "total_outcomes":    total,
+            "ai_accuracy_pct":   round(correct / total * 100, 1) if total else None,
+            "override_rate_pct": round(overridden / total * 100, 1) if total else None,
+            "by_intent":         by_intent,
+        })
+
+    @action(detail=False, methods=["get"], url_path="reports/digest")
+    def digest(self, request):
+        latest = DigestReport.objects.order_by("-generated_at").first()
+        if not latest:
+            return Response({"detail": "No digest generated yet."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({
+            "generated_at":   latest.generated_at,
+            "high_risk_count": latest.high_risk_count,
+            "failed_count":    latest.failed_count,
+            "task_codes":      latest.task_codes,
+        })
+
+    @action(detail=False, methods=["post"], url_path="reports/digest/generate")
+    def generate_digest(self, request):
+        from celery_tasks.scheduled import daily_digest
+        result = daily_digest.delay()
+        return Response({"detail": "Digest generation queued.", "task_id": result.id})

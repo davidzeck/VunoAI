@@ -3,6 +3,7 @@ from django.db import transaction
 
 from apps.tasks.models import Task, ExtractedEntity, TaskStep, GeneratedMessage, StatusHistory
 from utils.task_codes import generate_task_code
+from services.ai.scope_checker import ScopeChecker
 from services.ai.intent_extractor import IntentExtractor
 from services.ai.workflow_generator import WorkflowGenerator
 from services.ai.message_generator import MessageGenerator
@@ -14,7 +15,8 @@ log = structlog.get_logger()
 
 class TaskService:
     def __init__(self):
-        self.intent_extractor  = IntentExtractor()
+        self.scope_checker      = ScopeChecker()
+        self.intent_extractor   = IntentExtractor()
         self.workflow_generator = WorkflowGenerator()
         self.message_generator  = MessageGenerator()
 
@@ -35,6 +37,21 @@ class TaskService:
         log.info("pipeline_started", task_code=task.task_code)
         task.status = Task.Status.IN_PROGRESS
         task.save(update_fields=["status", "updated_at"])
+
+        # Stage 0 — scope check
+        scope = self.scope_checker.check(task.customer_request)
+        if not scope.in_scope:
+            task.status = Task.Status.REJECTED
+            task.error_detail = scope.reason
+            task.save(update_fields=["status", "error_detail", "updated_at"])
+            StatusHistory.objects.create(
+                task=task,
+                from_status=Task.Status.IN_PROGRESS,
+                to_status=Task.Status.REJECTED,
+                note=scope.reason,
+            )
+            log.info("task_rejected", task_code=task.task_code, reason=scope.reason)
+            return
 
         # Stage 1 — intent extraction
         intent_data = self.intent_extractor.extract(task.customer_request)

@@ -11,7 +11,7 @@ class TaskStepSerializer(serializers.ModelSerializer):
 class GeneratedMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model  = GeneratedMessage
-        fields = ["channel", "content"]
+        fields = ["id", "channel", "content", "recipient", "sent_at", "send_error"]
 
 
 class ExtractedEntitySerializer(serializers.ModelSerializer):

@@ -144,6 +144,7 @@ input:focus, textarea:focus, select:focus {
 .badge-status-in_progress { color:var(--status-in_progress); background:var(--status-in_progress-bg); }
 .badge-status-completed   { color:var(--status-completed);   background:var(--status-completed-bg); }
 .badge-status-failed      { color:var(--status-failed);      background:var(--status-failed-bg); }
+.badge-status-rejected    { color:var(--accent-amber);       background:#FEF3E2; }
 .badge-dot::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; background:currentColor; }
 .risk-score-inline { font-size:11px; color:var(--text-muted); margin-left:4px; }
 
@@ -224,6 +225,11 @@ input:focus, textarea:focus, select:focus {
 /* ─── Processing banner ──────────────────────────────── */
 .processing-banner { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-4) var(--sp-5); background:var(--status-in_progress-bg); border:1px solid #BDD8F0; border-radius:var(--radius-md); margin-bottom:var(--sp-6); font-size:13px; color:var(--status-in_progress); font-weight:500; }
 .processing-banner.hidden { display:none; }
+.rejection-banner { display:flex; align-items:flex-start; gap:var(--sp-4); padding:var(--sp-4) var(--sp-5); background:#FEF3E2; border:1px solid #FAD7A0; border-radius:var(--radius-md); margin-bottom:var(--sp-6); }
+.rejection-banner.hidden { display:none; }
+.rejection-banner__icon { font-size:16px; color:var(--accent-amber); font-weight:700; margin-top:1px; flex-shrink:0; }
+.rejection-banner__title { font-size:13px; font-weight:600; color:var(--accent-amber); margin-bottom:2px; }
+.rejection-banner__reason { font-size:13px; color:var(--text-secondary); }
 .spinner { width:16px; height:16px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
 @keyframes spin { to{transform:rotate(360deg)} }
 

@@ -11,6 +11,8 @@ const code = getTaskCodeFromURL();
 if (!code) window.location.href = "dashboard.html";
 
 // DOM refs
+const rejectionBanner  = qs("#rejection-banner");
+const rejectionReason  = qs("#rejection-reason");
 const processingBanner = qs("#processing-banner");
 const taskCodeEl       = qs("#task-code");
 const taskStatusEl     = qs("#task-status");
@@ -60,6 +62,14 @@ function render(task) {
   if (requestQuote) requestQuote.textContent = task.customer_request;
   if (escalationBadge) {
     escalationBadge.style.display = task.escalation_required ? "inline-flex" : "none";
+  }
+
+  // Rejection banner
+  if (task.status === "rejected") {
+    rejectionBanner?.classList.remove("hidden");
+    if (rejectionReason) rejectionReason.textContent = task.error_detail || "This request is outside Vunoh's service scope.";
+  } else {
+    rejectionBanner?.classList.add("hidden");
   }
 
   // Risk card

@@ -7,6 +7,7 @@ export const API_BASE = "http://localhost:8000";
 
 export const POLL_INTERVAL_MS = 2000;
 export const PROCESSING_STATUSES = ["pending", "in_progress"];
+export const TERMINAL_STATUSES   = ["completed", "failed", "rejected"];
 
 export const INTENT_LABELS = {
   send_money:       "Send Money",
@@ -21,6 +22,7 @@ export const STATUS_LABELS = {
   in_progress: "In Progress",
   completed:   "Completed",
   failed:      "Failed",
+  rejected:    "Rejected",
 };
 
 export const RISK_LABELS = {
