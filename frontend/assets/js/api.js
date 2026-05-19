@@ -24,5 +24,6 @@ export const api = {
     get:    (code)         => request("GET", `/tasks/${code}/`),
     status: (code, body)   => request("PATCH", `/tasks/${code}/status/`, body),
     messages: (code)       => request("GET", `/tasks/${code}/messages/`),
+    send:     (code, channel, recipient) => request("POST", `/tasks/${code}/messages/send/`, { channel, recipient }),
   },
 };

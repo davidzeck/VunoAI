@@ -156,6 +156,29 @@ function render(task) {
   }
 }
 
+// Send buttons
+["whatsapp", "email"].forEach(channel => {
+  const btn      = qs(`#send-btn-${channel}`);
+  const inp      = qs(`#send-recipient-${channel}`);
+  const statusEl = qs(`#send-status-${channel}`);
+
+  btn?.addEventListener("click", async () => {
+    const recipient = inp?.value.trim();
+    if (!recipient) { notify.error("Enter a recipient first."); return; }
+    btn.disabled    = true;
+    btn.textContent = "Sending…";
+    try {
+      await api.tasks.send(code, channel, recipient);
+      if (statusEl) { statusEl.textContent = "✓ Queued"; statusEl.classList.add("send-status--sent"); }
+      notify.success(`${channel === "whatsapp" ? "WhatsApp" : "Email"} message queued.`);
+    } catch (err) {
+      notify.error(err.message || "Failed to send.");
+      btn.disabled    = false;
+      btn.textContent = `Send via ${channel === "whatsapp" ? "WhatsApp" : "Email"}`;
+    }
+  });
+});
+
 // Status update
 statusSaveBtn?.addEventListener("click", async () => {
   const newStatus = statusSelect?.value;

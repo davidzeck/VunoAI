@@ -118,9 +118,19 @@
           </div>
           <div id="tab-whatsapp" class="tab-panel active">
             <div id="msg-whatsapp" class="message-content">Processing…</div>
+            <div class="send-row" id="send-row-whatsapp">
+              <input type="tel" id="send-recipient-whatsapp" class="send-input" placeholder="+254712345678" />
+              <button class="btn btn-outline btn-sm" id="send-btn-whatsapp">Send via WhatsApp</button>
+              <span id="send-status-whatsapp" class="send-status"></span>
+            </div>
           </div>
           <div id="tab-email" class="tab-panel">
             <div id="msg-email" class="message-content">Processing…</div>
+            <div class="send-row" id="send-row-email">
+              <input type="email" id="send-recipient-email" class="send-input" placeholder="customer@email.com" />
+              <button class="btn btn-outline btn-sm" id="send-btn-email">Send via Email</button>
+              <span id="send-status-email" class="send-status"></span>
+            </div>
           </div>
           <div id="tab-sms" class="tab-panel">
             <div id="msg-sms" class="message-content">Processing…</div>

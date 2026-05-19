@@ -6,4 +6,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
 app = Celery("vunoh")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks(["celery_tasks"])
-app.conf.imports = ["celery_tasks.task_processor", "celery_tasks.scheduled"]
+app.conf.imports = ["celery_tasks.task_processor", "celery_tasks.scheduled", "celery_tasks.send_message"]
