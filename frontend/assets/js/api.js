@@ -19,7 +19,7 @@ async function request(method, path, body = null) {
 
 export const api = {
   tasks: {
-    list:   (params = {}) => request("GET", `/tasks/?${new URLSearchParams(params)}`),
+    list:   (params = {}) => request("GET", `/tasks/?${new URLSearchParams(params)}`).then(r => r.results ?? r),
     create: (body)         => request("POST", "/tasks/", body),
     get:    (code)         => request("GET", `/tasks/${code}/`),
     status: (code, body)   => request("PATCH", `/tasks/${code}/status/`, body),

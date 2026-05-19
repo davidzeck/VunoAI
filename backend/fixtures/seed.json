@@ -1,1 +1,243 @@
-[]
+[
+  {
+    "model": "tasks.task",
+    "pk": 100,
+    "fields": {
+      "task_code": "VNH-2026-SM001",
+      "customer_request": "I need to send KES 15,000 to my mother in Kisumu urgently. She needs it for hospital bills today.",
+      "intent": "send_money",
+      "status": "completed",
+      "risk_score": 10,
+      "risk_level": "low",
+      "risk_flags": ["urgent_request"],
+      "risk_explanation": ["Urgency flag raised but amount is within normal range", "Returning customer with good history"],
+      "escalation_required": false,
+      "entities": {"amount": "15000", "recipient": "mother", "location": "Kisumu", "urgency": "high"},
+      "urgency_level": "high",
+      "ai_confidence": 0.95,
+      "employee_assignment": "Finance Team",
+      "error_detail": "",
+      "created_at": "2026-05-19T08:15:00+03:00",
+      "updated_at": "2026-05-19T08:15:03+03:00"
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 101,
+    "fields": {
+      "task_code": "VNH-2026-VD002",
+      "customer_request": "I need to verify my land title deed for a property in Nakuru. The title number is NKR/TATU/4521. I want to confirm there are no encumbrances before I sell.",
+      "intent": "verify_document",
+      "status": "completed",
+      "risk_score": 75,
+      "risk_level": "high",
+      "risk_flags": ["document_verification", "high_value_asset"],
+      "risk_explanation": ["Document verification carries elevated fraud risk", "Land title transfers are high-value transactions", "Manual verification required with Lands Registry"],
+      "escalation_required": true,
+      "entities": {"document_type": "land title", "location": "Nakuru", "reference": "NKR/TATU/4521"},
+      "urgency_level": "medium",
+      "ai_confidence": 0.88,
+      "employee_assignment": "Legal & Compliance",
+      "error_detail": "",
+      "created_at": "2026-05-19T09:30:00+03:00",
+      "updated_at": "2026-05-19T09:30:04+03:00"
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 102,
+    "fields": {
+      "task_code": "VNH-2026-HS003",
+      "customer_request": "I need a reliable plumber in Mombasa, Nyali area. The kitchen sink pipe burst and the whole apartment is flooding. Need someone within the next 2 hours.",
+      "intent": "hire_service",
+      "status": "in_progress",
+      "risk_score": 20,
+      "risk_level": "low",
+      "risk_flags": ["urgent_request"],
+      "risk_explanation": ["Standard service hire", "Urgency noted but no financial risk indicators"],
+      "escalation_required": false,
+      "entities": {"service_type": "plumber", "location": "Mombasa, Nyali", "urgency": "within 2 hours"},
+      "urgency_level": "high",
+      "ai_confidence": 0.92,
+      "employee_assignment": "Field Operations",
+      "error_detail": "",
+      "created_at": "2026-05-19T10:45:00+03:00",
+      "updated_at": "2026-05-19T10:45:02+03:00"
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 103,
+    "fields": {
+      "task_code": "VNH-2026-AT004",
+      "customer_request": "My parents are arriving at JKIA on Friday, KQ101 from London, landing at 06:30. I need a vehicle for 3 passengers plus 4 large suitcases. They are elderly so please a comfortable ride to Westlands.",
+      "intent": "airport_transfer",
+      "status": "pending",
+      "risk_score": 5,
+      "risk_level": "low",
+      "risk_flags": [],
+      "risk_explanation": ["Routine airport transfer", "No financial risk indicators present"],
+      "escalation_required": false,
+      "entities": {"airport": "JKIA", "flight": "KQ101", "passengers": "3", "destination": "Westlands", "arrival": "Friday 06:30"},
+      "urgency_level": "medium",
+      "ai_confidence": 0.97,
+      "employee_assignment": "Logistics Team",
+      "error_detail": "",
+      "created_at": "2026-05-19T11:00:00+03:00",
+      "updated_at": "2026-05-19T11:00:01+03:00"
+    }
+  },
+  {
+    "model": "tasks.task",
+    "pk": 104,
+    "fields": {
+      "task_code": "VNH-2026-GI005",
+      "customer_request": "Hi, I just want to check my account balance and find out what the current exchange rate is for GBP to KES. Also when does my last transaction clear?",
+      "intent": "general_inquiry",
+      "status": "completed",
+      "risk_score": 0,
+      "risk_level": "low",
+      "risk_flags": [],
+      "risk_explanation": ["Routine balance and rate inquiry", "No risk indicators"],
+      "escalation_required": false,
+      "entities": {"currency_from": "GBP", "currency_to": "KES", "inquiry_type": "balance and exchange rate"},
+      "urgency_level": "low",
+      "ai_confidence": 0.99,
+      "employee_assignment": "Customer Support",
+      "error_detail": "",
+      "created_at": "2026-05-19T12:00:00+03:00",
+      "updated_at": "2026-05-19T12:00:02+03:00"
+    }
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 1,
+    "fields": {"task": 100, "order": 1, "description": "Verify sender KYC and account standing", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 2,
+    "fields": {"task": 100, "order": 2, "description": "Confirm recipient mobile money details", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 3,
+    "fields": {"task": 100, "order": 3, "description": "Check transfer limits and compliance flags", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 4,
+    "fields": {"task": 100, "order": 4, "description": "Initiate M-Pesa disbursement to +254712345678", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 5,
+    "fields": {"task": 100, "order": 5, "description": "Send confirmation to customer via WhatsApp", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 6,
+    "fields": {"task": 101, "order": 1, "description": "Request original title deed from customer", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 7,
+    "fields": {"task": 101, "order": 2, "description": "Submit search request to Lands Registry Nakuru", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 8,
+    "fields": {"task": 101, "order": 3, "description": "Verify title against encumbrance register", "completed": false}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 9,
+    "fields": {"task": 101, "order": 4, "description": "Escalate findings to Legal & Compliance officer", "completed": false}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 10,
+    "fields": {"task": 102, "order": 1, "description": "Identify available plumbers in Nyali area", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 11,
+    "fields": {"task": 102, "order": 2, "description": "Confirm technician availability within 2-hour window", "completed": true}
+  },
+  {
+    "model": "tasks.taskstep",
+    "pk": 12,
+    "fields": {"task": 102, "order": 3, "description": "Dispatch plumber — Kariuki Plumbing, ETA 45 mins", "completed": false}
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 1,
+    "fields": {
+      "task": 100,
+      "channel": "whatsapp",
+      "content": "Hi! Your transfer of KES 15,000 to your mother in Kisumu has been processed successfully.\n\nTransaction reference: VNH-2026-SM001\nRecipient will receive funds via M-Pesa within 5 minutes.\n\nIs there anything else we can help you with?"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 2,
+    "fields": {
+      "task": 100,
+      "channel": "email",
+      "content": "Dear Valued Customer,\n\nWe are pleased to confirm that your money transfer request has been successfully processed.\n\nTransaction Details:\n- Amount: KES 15,000\n- Recipient: Your mother, Kisumu\n- Reference: VNH-2026-SM001\n- Estimated delivery: Within 5 minutes via M-Pesa\n\nIf you have any questions or concerns, please do not hesitate to contact our support team.\n\nWarm regards,\nVunoh Financial Services"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 3,
+    "fields": {
+      "task": 100,
+      "channel": "sms",
+      "content": "Vunoh: KES 15,000 sent to Kisumu. Ref VNH-2026-SM001. M-Pesa delivery in 5 mins. Help: 0800-VUNOH"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 1,
+    "fields": {
+      "task": 100,
+      "from_status": "pending",
+      "to_status": "in_progress",
+      "note": "AI pipeline started",
+      "changed_at": "2026-05-19T08:15:01+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 2,
+    "fields": {
+      "task": 100,
+      "from_status": "in_progress",
+      "to_status": "completed",
+      "note": "Pipeline completed. Transfer disbursed.",
+      "changed_at": "2026-05-19T08:15:03+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 3,
+    "fields": {
+      "task": 101,
+      "from_status": "pending",
+      "to_status": "in_progress",
+      "note": "AI pipeline started",
+      "changed_at": "2026-05-19T09:30:01+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 4,
+    "fields": {
+      "task": 101,
+      "from_status": "in_progress",
+      "to_status": "completed",
+      "note": "Escalated to Legal & Compliance for manual review.",
+      "changed_at": "2026-05-19T09:30:04+03:00"
+    }
+  }
+]

@@ -10,7 +10,14 @@ from .serializers import (
 )
 from services.task_service import TaskService
 
-task_service = TaskService()
+_task_service = None
+
+
+def _get_task_service():
+    global _task_service
+    if _task_service is None:
+        _task_service = TaskService()
+    return _task_service
 
 
 class TaskViewSet(viewsets.GenericViewSet):
@@ -48,7 +55,7 @@ class TaskViewSet(viewsets.GenericViewSet):
                 {"error": "customer_request is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        task = task_service.initiate(customer_request)
+        task = _get_task_service().initiate(customer_request)
         return Response(
             {
                 "task_code": task.task_code,

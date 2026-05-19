@@ -2,8 +2,6 @@ from .base import *
 
 DEBUG = True
 
-INSTALLED_APPS += ["django.contrib.staticfiles"]
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
