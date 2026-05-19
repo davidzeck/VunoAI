@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard — Vunoh Ops{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  .table-wrap {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  @media (max-width: 700px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .hide-mobile { display: none; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Operations Dashboard</div>
+      <div class="page-subtitle">All customer requests and their workflow status</div>
+    </div>
+    <a href="{% url 'index' %}" class="btn btn-primary">+ New Request</a>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-card__label">Total Tasks</div>
+      <div class="stat-card__value">{{ total_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__label">Pending / Processing</div>
+      <div class="stat-card__value" style="color: var(--status-in_progress);">{{ pending_count }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card__label">High Risk</div>
+      <div class="stat-card__value" style="color: var(--risk-high);">{{ high_risk_count }}</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <form id="filter-form" method="GET" action="{% url 'dashboard' %}">
+    <div class="filter-bar">
+      <select name="status" id="filter-status">
+        <option value="">All Statuses</option>
+        {% for val, label in status_choices %}
+          <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="risk_level" id="filter-risk">
+        <option value="">All Risk Levels</option>
+        <option value="low"    {% if risk_level_filter == "low" %}selected{% endif %}>Low Risk</option>
+        <option value="medium" {% if risk_level_filter == "medium" %}selected{% endif %}>Medium Risk</option>
+        <option value="high"   {% if risk_level_filter == "high" %}selected{% endif %}>High Risk</option>
+      </select>
+      <select name="intent" id="filter-intent">
+        <option value="">All Intents</option>
+        <option value="send_money"      {% if intent_filter == "send_money" %}selected{% endif %}>Send Money</option>
+        <option value="verify_document" {% if intent_filter == "verify_document" %}selected{% endif %}>Verify Document</option>
+        <option value="hire_service"    {% if intent_filter == "hire_service" %}selected{% endif %}>Hire Service</option>
+        <option value="airport_transfer"{% if intent_filter == "airport_transfer" %}selected{% endif %}>Airport Transfer</option>
+        <option value="general_inquiry" {% if intent_filter == "general_inquiry" %}selected{% endif %}>General Inquiry</option>
+      </select>
+      <input type="text" name="search" placeholder="Search task code or request…" value="{{ search }}">
+      <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+      {% if status_filter or risk_level_filter or intent_filter or search %}
+        <a href="{% url 'dashboard' %}" class="btn btn-outline btn-sm">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    {% if tasks %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Task Code</th>
+            <th>Intent</th>
+            <th>Status</th>
+            <th>Risk</th>
+            <th class="hide-mobile">Team</th>
+            <th class="hide-mobile">Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+          <tr style="cursor:pointer;" onclick="window.location='{% url 'task-detail' task.task_code %}'">
+            <td><span class="task-code">{{ task.task_code }}</span></td>
+            <td>
+              {% if task.intent %}
+                <div class="intent-label"><span>{{ task.intent|title|cut:"_" }}</span></div>
+              {% else %}
+                <span style="color: var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge badge-dot badge-status-{{ task.status }}">
+                {{ task.get_status_display }}
+              </span>
+            </td>
+            <td>
+              {% if task.risk_level %}
+                <span class="badge badge-risk-{{ task.risk_level }}">
+                  {{ task.risk_level|upper }} {% if task.risk_score %}· {{ task.risk_score }}{% endif %}
+                </span>
+              {% else %}
+                <span style="color: var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+            <td class="hide-mobile" style="color: var(--text-secondary); font-size: var(--font-size-xs);">
+              {{ task.employee_assignment|default:"—" }}
+            </td>
+            <td class="hide-mobile" style="color: var(--text-muted); font-size: var(--font-size-xs);">
+              {{ task.created_at|date:"M d, H:i" }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <div style="font-size: 32px;">📋</div>
+        <div style="font-weight: 600; margin-top: var(--sp-3);">No tasks found</div>
+        <p>{% if status_filter or risk_level_filter or intent_filter or search %}Try adjusting your filters.{% else %}<a href="{% url 'index' %}">Submit your first request</a> to get started.{% endif %}</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/filters.js' %}"></script>
+{% endblock %}

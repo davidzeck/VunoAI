@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Vunoh Ops{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="app-shell">
+
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <div class="sidebar__logo">V</div>
+        <span class="sidebar__name">Vunoh Ops</span>
+      </div>
+      <nav class="sidebar__nav">
+        <a href="{% url 'index' %}" class="nav-item {% block nav_new %}{% endblock %}">
+          + New Request
+        </a>
+        <a href="{% url 'dashboard' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
+          Dashboard
+        </a>
+      </nav>
+      <div class="sidebar__footer">
+        <span class="sidebar__version">Vunoh AI · v1.0</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div id="toast-container"></div>
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  <script src="{% static 'js/toast.js' %}"></script>
+  <script src="{% static 'js/api.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
