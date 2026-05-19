@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Detail — Vunoh Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__logo">V</div>
+      <span class="sidebar__name">Vunoh Ops</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="index.html"     class="nav-item">+ New Request</a>
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+    </nav>
+    <div class="sidebar__footer">Vunoh AI · v1.0</div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-container">
+
+      <!-- Processing banner -->
+      <div id="processing-banner" class="processing-banner hidden">
+        <div class="spinner"></div>
+        AI pipeline is processing this request — page will update automatically.
+      </div>
+
+      <!-- Task header -->
+      <div class="detail-header">
+        <div class="detail-header__top">
+          <a href="dashboard.html" class="back-link">← Dashboard</a>
+          <span style="color:var(--border-medium)">·</span>
+          <span id="task-code" class="task-code" style="font-size:15px">—</span>
+          <span id="task-status"></span>
+          <span id="task-intent"></span>
+          <span id="escalation-badge" class="badge" style="background:#FEF3E2;color:#C17A2A;border-color:#FAD7A0;display:none;">
+            ⚠ Escalation Required
+          </span>
+        </div>
+        <div id="request-quote" class="request-quote">Loading…</div>
+      </div>
+
+      <!-- 3-col grid -->
+      <div class="detail-grid">
+
+        <!-- Risk card -->
+        <div class="card">
+          <div class="card-header">Risk Assessment</div>
+          <div class="card-body">
+            <div id="risk-score" style="font-size:40px;font-weight:700;line-height:1;">—</div>
+            <div id="risk-level" style="margin-top:4px;"></div>
+            <div class="risk-bar" style="margin-top:12px;">
+              <div id="risk-bar-fill" class="risk-bar__fill" style="width:0%"></div>
+            </div>
+            <ul id="risk-flags" class="flag-list" style="margin-top:16px;"></ul>
+          </div>
+        </div>
+
+        <!-- Workflow steps -->
+        <div class="card">
+          <div class="card-header">Fulfillment Steps</div>
+          <div class="card-body">
+            <ul id="steps-list" class="step-list"></ul>
+          </div>
+        </div>
+
+        <!-- Assignment + status update -->
+        <div class="card">
+          <div class="card-header">Assignment</div>
+          <div class="card-body">
+            <div id="assignment" style="font-size:18px;font-weight:600;color:var(--text-primary);">—</div>
+
+            <div class="confidence-row" style="margin-top:12px;">
+              <span style="font-size:12px;">AI confidence</span>
+              <div class="confidence-bar">
+                <div id="confidence-bar" class="confidence-bar__fill" style="width:0%"></div>
+              </div>
+              <span id="confidence-val" style="font-size:12px;font-weight:600;">—</span>
+            </div>
+
+            <div id="entities-grid" class="entities-grid"></div>
+
+            <div style="margin-top:var(--sp-5);display:flex;gap:var(--sp-3);align-items:center;">
+              <select id="status-select" style="flex:1;"></select>
+              <button id="status-save" class="btn btn-outline btn-sm">Save</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Messages tabs -->
+      <div id="messages-section" class="card" style="margin-bottom:var(--sp-5);">
+        <div class="card-header">Customer Messages</div>
+        <div class="card-body">
+          <div class="tab-bar">
+            <div class="tab active" data-tab="whatsapp">WhatsApp</div>
+            <div class="tab"        data-tab="email">Email</div>
+            <div class="tab"        data-tab="sms">SMS</div>
+          </div>
+          <div id="tab-whatsapp" class="tab-panel active">
+            <div id="msg-whatsapp" class="message-content">Processing…</div>
+          </div>
+          <div id="tab-email" class="tab-panel">
+            <div id="msg-email" class="message-content">Processing…</div>
+          </div>
+          <div id="tab-sms" class="tab-panel">
+            <div id="msg-sms" class="message-content">Processing…</div>
+            <div id="msg-sms-count" style="margin-top:6px;font-size:11px;color:var(--text-muted);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status history -->
+      <div class="card">
+        <div class="card-header">Status History</div>
+        <div class="card-body">
+          <ul id="history-list" class="timeline">
+            <li class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div style="color:var(--text-muted);font-size:13px;">No history yet.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+<script type="module" src="assets/js/pages/task-detail.js"></script>
+</body>
+</html>

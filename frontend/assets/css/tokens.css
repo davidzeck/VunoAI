@@ -1,0 +1,44 @@
+:root {
+  --bg-base:          #FAF8F3;
+  --bg-surface:       #FFFFFF;
+  --bg-subtle:        #F2EDE4;
+  --bg-sidebar:       #1C2B1A;
+  --bg-sidebar-hover: #2A3D28;
+  --bg-sidebar-active:#344F31;
+
+  --border-light:  #E8DDD0;
+  --border-medium: #D4C9BB;
+  --border-focus:  #2A5F3F;
+
+  --text-primary:   #1A1A1A;
+  --text-secondary: #7A7168;
+  --text-inverse:   #F5F0E8;
+  --text-muted:     #ADA59A;
+  --text-link:      #2A5F3F;
+
+  --accent-primary: #2A5F3F;
+  --accent-hover:   #1E4A30;
+  --accent-amber:   #C17A2A;
+
+  --risk-high:          #C0392B; --risk-high-bg:    #FDECEA; --risk-high-border:   #F5C6C2;
+  --risk-medium:        #D4820A; --risk-medium-bg:  #FEF3E2; --risk-medium-border: #FAD7A0;
+  --risk-low:           #1E8449; --risk-low-bg:     #E8F8EE; --risk-low-border:    #A9DFBF;
+
+  --status-pending:        #6B7A8D; --status-pending-bg:     #EEF1F5;
+  --status-in_progress:    #1A6FA8; --status-in_progress-bg: #E8F2FB;
+  --status-completed:      #1E8449; --status-completed-bg:   #E8F8EE;
+  --status-failed:         #922B21; --status-failed-bg:      #FDECEA;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
+
+  --radius-sm:4px; --radius-md:8px; --radius-lg:12px; --radius-xl:16px;
+
+  --shadow-card:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,.08);
+
+  --sidebar-width: 240px;
+}

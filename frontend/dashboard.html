@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Vunoh Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__logo">V</div>
+      <span class="sidebar__name">Vunoh Ops</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="index.html"     class="nav-item">+ New Request</a>
+      <a href="dashboard.html" class="nav-item active">Dashboard</a>
+    </nav>
+    <div class="sidebar__footer">Vunoh AI · v1.0</div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-container">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">Operations Dashboard</div>
+          <div class="page-subtitle">All customer requests and their workflow status</div>
+        </div>
+        <a href="index.html" class="btn btn-primary">+ New Request</a>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card__label">Total Tasks</div>
+          <div class="stat-card__value" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Pending / Processing</div>
+          <div class="stat-card__value" id="stat-pending" style="color:var(--status-in_progress)">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">High Risk</div>
+          <div class="stat-card__value" id="stat-high-risk" style="color:var(--risk-high)">—</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <form id="filter-form" method="GET" action="dashboard.html">
+        <div class="filter-bar">
+          <select name="status">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="failed">Failed</option>
+          </select>
+          <select name="risk_level">
+            <option value="">All Risk Levels</option>
+            <option value="low">Low Risk</option>
+            <option value="medium">Medium Risk</option>
+            <option value="high">High Risk</option>
+          </select>
+          <select name="intent">
+            <option value="">All Intents</option>
+            <option value="send_money">Send Money</option>
+            <option value="verify_document">Verify Document</option>
+            <option value="hire_service">Hire Service</option>
+            <option value="airport_transfer">Airport Transfer</option>
+            <option value="general_inquiry">General Inquiry</option>
+          </select>
+          <input type="text" name="search" placeholder="Search task code or request…">
+          <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+          <button type="button" id="clear-filters" class="btn btn-outline btn-sm">Clear</button>
+        </div>
+      </form>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Task Code</th>
+              <th>Intent</th>
+              <th>Status</th>
+              <th>Risk</th>
+              <th class="hide-mobile">Team</th>
+              <th class="hide-mobile">Created</th>
+            </tr>
+          </thead>
+          <tbody id="task-tbody">
+            <!-- Populated by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+<script type="module" src="assets/js/pages/dashboard.js"></script>
+</body>
+</html>
