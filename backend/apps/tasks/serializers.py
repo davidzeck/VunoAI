@@ -48,7 +48,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             "task_code", "customer_request", "intent", "status",
             "risk_score", "risk_level", "risk_flags", "risk_explanation",
             "escalation_required", "entities", "urgency_level",
-            "ai_confidence", "employee_assignment", "error_detail",
+            "ai_confidence", "employee_assignment", "clarification_note", "error_detail",
             "created_at", "updated_at",
             "steps", "messages", "extracted_entities", "history",
         ]

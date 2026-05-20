@@ -53,6 +53,11 @@ class TaskService:
             log.info("task_rejected", task_code=task.task_code, reason=scope.reason)
             return
 
+        if scope.clarification_note:
+            task.clarification_note = scope.clarification_note
+            task.save(update_fields=["clarification_note"])
+            log.info("task_clarified", task_code=task.task_code, note=scope.clarification_note)
+
         # Stage 1 — intent extraction
         intent_data = self.intent_extractor.extract(task.customer_request)
         log.info("intent_extracted", task_code=task.task_code, intent=intent_data.intent,

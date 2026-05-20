@@ -11,7 +11,9 @@ const code = getTaskCodeFromURL();
 if (!code) window.location.href = "dashboard.html";
 
 // DOM refs
-const rejectionBanner  = qs("#rejection-banner");
+const clarificationBanner = qs("#clarification-banner");
+const clarificationNote   = qs("#clarification-note");
+const rejectionBanner     = qs("#rejection-banner");
 const rejectionReason  = qs("#rejection-reason");
 const processingBanner = qs("#processing-banner");
 const taskCodeEl       = qs("#task-code");
@@ -62,6 +64,14 @@ function render(task) {
   if (requestQuote) requestQuote.textContent = task.customer_request;
   if (escalationBadge) {
     escalationBadge.style.display = task.escalation_required ? "inline-flex" : "none";
+  }
+
+  // Clarification banner
+  if (task.clarification_note && task.status !== "rejected") {
+    clarificationBanner?.classList.remove("hidden");
+    if (clarificationNote) clarificationNote.textContent = task.clarification_note;
+  } else {
+    clarificationBanner?.classList.add("hidden");
   }
 
   // Rejection banner

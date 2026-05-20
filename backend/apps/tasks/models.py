@@ -22,6 +22,7 @@ class Task(models.Model):
     urgency_level       = models.CharField(max_length=10, blank=True)
     ai_confidence       = models.FloatField(null=True, blank=True)
     employee_assignment = models.CharField(max_length=100, blank=True)
+    clarification_note  = models.TextField(blank=True)
     error_detail        = models.TextField(blank=True)
     created_at          = models.DateTimeField(auto_now_add=True)
     updated_at          = models.DateTimeField(auto_now=True)
