@@ -1,7 +1,8 @@
 from decouple import config
 from groq import Groq
+from groq import RateLimitError as GroqRateLimitError
 
-from .base import AIProvider
+from .base import AIProvider, RateLimitError
 
 
 class GroqProvider(AIProvider):
@@ -16,14 +17,17 @@ class GroqProvider(AIProvider):
         return self._client
 
     def complete(self, system: str, user: str, temperature: float = 0.1) -> str:
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user",   "content": user},
-            ],
-            response_format={"type": "json_object"},
-            temperature=temperature,
-            max_tokens=1024,
-        )
-        return response.choices[0].message.content
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user",   "content": user},
+                ],
+                response_format={"type": "json_object"},
+                temperature=temperature,
+                max_tokens=1024,
+            )
+            return response.choices[0].message.content
+        except GroqRateLimitError as exc:
+            raise RateLimitError(f"Groq rate limit: {exc}") from exc

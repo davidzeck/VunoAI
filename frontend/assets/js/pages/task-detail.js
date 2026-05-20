@@ -74,10 +74,22 @@ function render(task) {
     clarificationBanner?.classList.add("hidden");
   }
 
-  // Rejection banner
-  if (task.status === "rejected") {
+  // Rejection / rate-limit banner
+  const isRateLimit = task.status === "failed" && task.error_detail?.startsWith("rate_limit_exceeded");
+  if (task.status === "rejected" || isRateLimit) {
     rejectionBanner?.classList.remove("hidden");
-    if (rejectionReason) rejectionReason.textContent = task.error_detail || "This request is outside Vunoh's service scope.";
+    const icon  = rejectionBanner?.querySelector(".rejection-banner__icon");
+    const title = rejectionBanner?.querySelector(".rejection-banner__title");
+    if (isRateLimit) {
+      if (icon)  icon.textContent  = "⏳";
+      if (title) title.textContent = "Rate Limit Reached";
+      if (rejectionReason) rejectionReason.textContent =
+        "Our AI providers are temporarily at capacity. This request will be retried automatically — check back in a few minutes.";
+    } else {
+      if (icon)  icon.textContent  = "✕";
+      if (title) title.textContent = "Request Out of Scope";
+      if (rejectionReason) rejectionReason.textContent = task.error_detail || "This request is outside Vunoh's service scope.";
+    }
   } else {
     rejectionBanner?.classList.add("hidden");
   }
