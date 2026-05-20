@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Task, ExtractedEntity, TaskStep, GeneratedMessage, StatusHistory
+from .models import Task, ExtractedEntity, TaskStep, GeneratedMessage, StatusHistory, DigestReport, TaskOutcome
 
 
 class ExtractedEntityInline(admin.TabularInline):
@@ -36,6 +36,19 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(StatusHistory)
 class StatusHistoryAdmin(admin.ModelAdmin):
-    list_display  = ["task", "from_status", "to_status", "changed_at"]
-    list_filter   = ["from_status", "to_status"]
+    list_display    = ["task", "from_status", "to_status", "changed_at"]
+    list_filter     = ["from_status", "to_status"]
     readonly_fields = ["task", "from_status", "to_status", "changed_at"]
+
+
+@admin.register(DigestReport)
+class DigestReportAdmin(admin.ModelAdmin):
+    list_display    = ["generated_at", "high_risk_count", "failed_count"]
+    readonly_fields = ["generated_at", "high_risk_count", "failed_count", "task_codes"]
+
+
+@admin.register(TaskOutcome)
+class TaskOutcomeAdmin(admin.ModelAdmin):
+    list_display    = ["task", "final_assignment", "ai_was_correct", "human_overrode_assignment", "recorded_at"]
+    list_filter     = ["ai_was_correct", "human_overrode_assignment"]
+    readonly_fields = ["task", "recorded_at"]
