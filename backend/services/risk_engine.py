@@ -205,6 +205,40 @@ RULES: list[RiskRule] = [
         explanation="AI uncertain about this request — may be unusual, complex, or misleading",
         weight_category="trust",
     ),
+
+    # ── AI-DETECTED SEMANTIC SIGNALS ───────────────────────────────────────────
+    # These rules consume entities that ONLY the AI can extract from natural language.
+    # The intent extractor reads meaning; the rules apply auditable thresholds.
+    # Architecture: AI = interpreter, rules = judge.
+
+    # R20: recipient met online — the primary vector for advance-fee and romance fraud
+    RiskRule(
+        condition=lambda e: str(e.get("recipient_relationship", "") or "").lower() == "online_contact",
+        score=30, flag="online_contact_recipient",
+        explanation="Recipient met online — primary vector for advance fee and romance fraud in the diaspora community",
+        weight_category="recipient",
+    ),
+    # R21: recipient is a stranger with no established relationship
+    RiskRule(
+        condition=lambda e: str(e.get("recipient_relationship", "") or "").lower() == "stranger",
+        score=20, flag="unknown_relationship",
+        explanation="Recipient is a stranger — identity and legitimacy cannot be verified",
+        weight_category="recipient",
+    ),
+    # R22: language shows signs of coaching or emotional coercion
+    RiskRule(
+        condition=lambda e: e.get("pressure_signals") is True,
+        score=20, flag="social_engineering_language",
+        explanation="Customer language shows signs of coaching or emotional pressure — social engineering indicator",
+        weight_category="trust",
+    ),
+    # R23: customer provided verifiable reference details — legitimacy signal (negative score)
+    RiskRule(
+        condition=lambda e: e.get("has_reference_details") is True,
+        score=-10, flag="verifiable_reference_provided",
+        explanation="Customer provided verifiable reference details — consistent with a legitimate operational request",
+        weight_category="trust",
+    ),
 ]
 
 _RISK_LEVELS = [

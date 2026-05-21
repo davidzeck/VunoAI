@@ -32,6 +32,20 @@ Entity extraction rules:
   or they do not know the recipient well. false if they reference an existing contact.
   Omit entirely if unclear — do not guess.
 - returning_customer: true only if explicitly stated
+- recipient_relationship: the customer's relationship to the recipient — one of:
+  "family", "friend_known", "stranger", "online_contact", "business".
+  "online_contact" = met online or never met in person.
+  "friend_known" = known in-person friend or colleague.
+  Omit if no recipient is involved (airport transfer, general inquiry).
+- pressure_signals: true if the customer's language shows signs of being coached,
+  scripted, or emotionally coercive — e.g. "please do it now", "they are waiting",
+  "don't ask questions", "I will explain later", or any phrasing that discourages
+  following normal procedure. false if the request is calm and coherent.
+  Omit if genuinely unclear.
+- has_reference_details: true if the customer provides at least one verifiable
+  reference point — a flight number, title deed reference, account number, tracking
+  ID, or named third party with contact details. false if the request is entirely
+  vague. Legitimate operational requests almost always include at least one reference.
 
 Never add fields outside the schema above. Never wrap in markdown code blocks."""
 
