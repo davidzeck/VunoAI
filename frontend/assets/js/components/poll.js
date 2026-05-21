@@ -10,7 +10,10 @@ export function pollTask(taskCode, { onDone, onError } = {}) {
   const id = setInterval(async () => {
     try {
       const task = await api.tasks.get(taskCode);
-      if (!PROCESSING_STATUSES.includes(task.status)) {
+      // Stop when: status leaves processing (failed/rejected), OR steps arrive
+      // (steps arriving = AI pipeline finished; task stays in_progress for ops to fulfil)
+      const pipelineDone = !PROCESSING_STATUSES.includes(task.status) || task.steps?.length > 0;
+      if (pipelineDone) {
         clearInterval(id);
         onDone?.(task);
       }

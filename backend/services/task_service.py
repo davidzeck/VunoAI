@@ -94,7 +94,8 @@ class TaskService:
             task.risk_explanation    = risk_data["risk_explanation"]
             task.escalation_required = risk_data["escalation_required"]
             task.employee_assignment = team
-            task.status              = Task.Status.COMPLETED
+            # Status stays IN_PROGRESS — ops team fulfils via step checkboxes.
+            # The task auto-transitions to COMPLETED when all steps are ticked.
             task.save()
 
             # Extracted entities
@@ -115,12 +116,5 @@ class TaskService:
                 GeneratedMessage(task=task, channel="email",    content=messages.email),
                 GeneratedMessage(task=task, channel="sms",      content=messages.sms),
             ])
-
-            # Status history
-            StatusHistory.objects.create(
-                task=task,
-                from_status=Task.Status.IN_PROGRESS,
-                to_status=Task.Status.COMPLETED,
-            )
 
         log.info("pipeline_completed", task_code=task.task_code)

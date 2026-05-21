@@ -22,8 +22,9 @@ export const api = {
     list:   (params = {}) => request("GET", `/tasks/?${new URLSearchParams(params)}`).then(r => r.results ?? r),
     create: (body)         => request("POST", "/tasks/", body),
     get:    (code)         => request("GET", `/tasks/${code}/`),
-    status: (code, body)   => request("PATCH", `/tasks/${code}/status/`, body),
-    messages: (code)       => request("GET", `/tasks/${code}/messages/`),
-    send:     (code, channel, recipient) => request("POST", `/tasks/${code}/messages/send/`, { channel, recipient }),
+    status:       (code, body)                    => request("PATCH", `/tasks/${code}/status/`, body),
+    completeStep: (code, order, completed)        => request("PATCH", `/tasks/${code}/steps/`, { order, completed }),
+    messages:     (code)                          => request("GET", `/tasks/${code}/messages/`),
+    send:         (code, channel, recipient)      => request("POST", `/tasks/${code}/messages/send/`, { channel, recipient }),
   },
 };

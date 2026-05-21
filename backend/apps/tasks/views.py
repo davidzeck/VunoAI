@@ -75,6 +75,55 @@ class TaskViewSet(viewsets.GenericViewSet):
         task = get_object_or_404(Task, task_code=task_code)
         return Response(TaskDetailSerializer(task).data)
 
+    @action(detail=True, methods=["patch"], url_path="steps")
+    def complete_step(self, request, task_code=None):
+        """Toggle a single workflow step's completed state.
+        Auto-transitions task to COMPLETED when the last step is checked off."""
+        from .models import TaskStep
+        task  = get_object_or_404(Task, task_code=task_code)
+        order = request.data.get("order")
+        done  = request.data.get("completed")
+
+        if order is None or not isinstance(done, bool):
+            return Response(
+                {"error": "order (int) and completed (bool) are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        step = get_object_or_404(TaskStep, task=task, order=order)
+        step.completed = done
+        step.save(update_fields=["completed"])
+
+        # Auto-complete the task when the last step is ticked
+        TERMINAL = {Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.REJECTED}
+        all_done  = done and not task.steps.filter(completed=False).exists()
+        if all_done and task.status not in TERMINAL:
+            old = task.status
+            task.status = Task.Status.COMPLETED
+            task.save(update_fields=["status", "updated_at"])
+            StatusHistory.objects.create(
+                task=task,
+                from_status=old,
+                to_status=Task.Status.COMPLETED,
+                note="Auto-completed: all workflow steps checked off by ops team.",
+            )
+            TaskOutcome.objects.update_or_create(
+                task=task,
+                defaults={
+                    "final_assignment":          task.employee_assignment,
+                    "human_overrode_assignment": False,
+                    "ai_was_correct":            True,
+                    "override_note":             "All steps completed by ops team.",
+                },
+            )
+
+        return Response({
+            "order":          step.order,
+            "completed":      step.completed,
+            "all_steps_done": all_done,
+            "task_status":    task.status,
+        })
+
     @action(detail=True, methods=["patch"], url_path="status")
     def update_status(self, request, task_code=None):
         task = get_object_or_404(Task, task_code=task_code)
@@ -84,6 +133,13 @@ class TaskViewSet(viewsets.GenericViewSet):
         old_status = task.status
         new_status = serializer.validated_data["status"]
         note       = serializer.validated_data.get("note", "")
+
+        # Rejected tasks are AI-only (scope check) — cannot be manually overridden
+        if task.status == Task.Status.REJECTED:
+            return Response(
+                {"error": "This request was rejected as out of scope and cannot be updated."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if old_status == new_status:
             return Response({"detail": "Status unchanged."})

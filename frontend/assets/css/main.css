@@ -180,9 +180,30 @@ input:focus, textarea:focus, select:focus {
 
 /* ─── Step list ──────────────────────────────────────── */
 .step-list { list-style:none; }
-.step-item { display:flex; gap:var(--sp-3); padding:var(--sp-3) 0; border-bottom:1px solid var(--border-light); font-size:13px; align-items:flex-start; }
+.step-item { display:flex; gap:var(--sp-3); padding:var(--sp-3) 0; border-bottom:1px solid var(--border-light); font-size:13px; align-items:flex-start; transition:opacity .2s; }
 .step-item:last-child { border-bottom:none; }
 .step-number { width:22px; height:22px; border-radius:50%; background:var(--bg-subtle); color:var(--text-secondary); font-size:11px; font-weight:700; display:grid; place-items:center; flex-shrink:0; }
+.step-check { margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:var(--accent-primary); width:15px; height:15px; }
+.step-check:disabled { cursor:default; opacity:.6; }
+.step-item--done { opacity:.55; }
+.step-item--done span:not(.step-number) { text-decoration:line-through; }
+
+/* ─── Danger button ──────────────────────────────────── */
+.btn--danger { background:var(--risk-high); color:#fff; border-color:var(--risk-high); }
+.btn--danger:hover { opacity:.88; }
+.btn--sm { padding:var(--sp-1) var(--sp-3); font-size:12px; }
+
+/* ─── Inline status select (dashboard rows) ─────────── */
+.status-select-inline {
+  font-size: 12px;
+  padding: 3px 6px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.status-select-inline:disabled { opacity: .5; cursor: default; }
 
 /* ─── Tabs ───────────────────────────────────────────── */
 .tab-bar { display:flex; gap:var(--sp-1); border-bottom:2px solid var(--border-light); margin-bottom:var(--sp-4); }

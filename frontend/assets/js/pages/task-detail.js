@@ -5,7 +5,7 @@ import { initTabs } from "../components/tabs.js";
 import { skeletonLines } from "../components/skeleton.js";
 import { riskBadge, statusBadge, intentLabel } from "../components/badge.js";
 import { getTaskCodeFromURL, formatDate, escapeHtml, qs } from "../utils.js";
-import { PROCESSING_STATUSES, STATUS_LABELS } from "../config.js";
+import { PROCESSING_STATUSES } from "../config.js";
 
 const code = getTaskCodeFromURL();
 if (!code) window.location.href = "dashboard.html";
@@ -35,8 +35,7 @@ const msgEmail         = qs("#msg-email");
 const msgSms           = qs("#msg-sms");
 const msgSmsCount      = qs("#msg-sms-count");
 const historyEl        = qs("#history-list");
-const statusSelect     = qs("#status-select");
-const statusSaveBtn    = qs("#status-save");
+const statusActionEl   = qs("#status-action");
 const tabsContainer    = qs("#messages-section");
 
 async function load() {
@@ -44,7 +43,11 @@ async function load() {
     const task = await api.tasks.get(code);
     render(task);
 
-    if (PROCESSING_STATUSES.includes(task.status)) {
+    // Only poll while the AI pipeline is still running.
+    // steps.length > 0 means the pipeline finished — don't poll even if status
+    // was manually changed back to in_progress by an ops agent.
+    const pipelineStillRunning = PROCESSING_STATUSES.includes(task.status) && !task.steps?.length;
+    if (pipelineStillRunning) {
       processingBanner?.classList.remove("hidden");
       pollTask(code, {
         onDone: (done) => { render(done); processingBanner?.classList.add("hidden"); },
@@ -110,14 +113,47 @@ function render(task) {
     if (riskScoreEl)  riskScoreEl.innerHTML = skeletonLines(3);
   }
 
-  // Steps
+  // Steps — interactive checklist (read-only when task is terminal)
   if (stepsEl) {
     if (task.steps?.length) {
+      const isTerminal = ["completed", "failed", "rejected"].includes(task.status);
       stepsEl.innerHTML = task.steps.map((s, i) => `
-        <li class="step-item">
+        <li class="step-item ${s.completed ? "step-item--done" : ""}">
+          <input type="checkbox"
+            class="step-check"
+            data-order="${s.order}"
+            ${s.completed  ? "checked"  : ""}
+            ${isTerminal   ? "disabled" : ""}
+          />
           <span class="step-number">${i + 1}</span>
           <span>${escapeHtml(s.description)}</span>
         </li>`).join("");
+
+      // Attach listeners only when task is not terminal
+      if (!isTerminal) {
+        stepsEl.querySelectorAll(".step-check").forEach(cb => {
+          cb.addEventListener("change", async () => {
+            cb.disabled = true;
+            try {
+              const result = await api.tasks.completeStep(
+                code, parseInt(cb.dataset.order, 10), cb.checked,
+              );
+              if (result.task_status !== task.status) {
+                // Task auto-completed — re-fetch and re-render the whole card
+                const updated = await api.tasks.get(code);
+                render(updated);
+              } else {
+                cb.closest(".step-item").classList.toggle("step-item--done", cb.checked);
+                cb.disabled = false;
+              }
+            } catch (err) {
+              notify.error(err.message || "Failed to update step.");
+              cb.checked = !cb.checked;
+              cb.disabled = false;
+            }
+          });
+        });
+      }
     } else {
       stepsEl.innerHTML = skeletonLines(4);
     }
@@ -154,12 +190,49 @@ function render(task) {
     if (tabsContainer) initTabs(tabsContainer);
   }
 
-  // Status select
-  if (statusSelect) {
-    statusSelect.value = task.status;
-    const canUpdate = !PROCESSING_STATUSES.includes(task.status);
-    statusSelect.disabled  = !canUpdate;
-    if (statusSaveBtn) statusSaveBtn.disabled = !canUpdate;
+  // Status update — available for all non-rejected tasks
+  if (statusActionEl) {
+    if (task.status === "rejected") {
+      statusActionEl.innerHTML = "";
+    } else {
+      const STATUS_OPTIONS = [
+        { value: "pending",     label: "Pending" },
+        { value: "in_progress", label: "In Progress" },
+        { value: "completed",   label: "Completed" },
+        { value: "failed",      label: "Failed" },
+      ];
+      statusActionEl.innerHTML = `
+        <div style="margin-top:var(--sp-4);padding-top:var(--sp-4);border-top:1px solid var(--border-light);">
+          <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:var(--sp-2);">Update Status</label>
+          <div style="display:flex;gap:var(--sp-2);align-items:center;">
+            <select id="status-select" style="flex:1;font-size:13px;">
+              ${STATUS_OPTIONS.map(o =>
+                `<option value="${o.value}" ${task.status === o.value ? "selected" : ""}>${o.label}</option>`
+              ).join("")}
+            </select>
+            <button id="status-save-btn" class="btn btn-outline btn--sm">Save</button>
+          </div>
+        </div>`;
+
+      qs("#status-save-btn")?.addEventListener("click", async () => {
+        const sel       = qs("#status-select");
+        const newStatus = sel?.value;
+        if (!newStatus || newStatus === task.status) return;
+        const saveBtn = qs("#status-save-btn");
+        saveBtn.disabled    = true;
+        saveBtn.textContent = "Saving…";
+        try {
+          await api.tasks.status(code, { status: newStatus });
+          notify.success("Status updated.");
+          const updated = await api.tasks.get(code);
+          render(updated);
+        } catch (err) {
+          notify.error(err.message || "Failed to update status.");
+          saveBtn.disabled    = false;
+          saveBtn.textContent = "Save";
+        }
+      });
+    }
   }
 
   // History
@@ -200,24 +273,5 @@ function render(task) {
     }
   });
 });
-
-// Status update
-statusSaveBtn?.addEventListener("click", async () => {
-  const newStatus = statusSelect?.value;
-  if (!newStatus) return;
-  try {
-    await api.tasks.status(code, { status: newStatus });
-    notify.success("Status updated.");
-    setTimeout(() => location.reload(), 800);
-  } catch (err) {
-    notify.error(err.message || "Failed to update status.");
-  }
-});
-
-// Build status select options
-if (statusSelect) {
-  statusSelect.innerHTML = Object.entries(STATUS_LABELS)
-    .map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
-}
 
 load();
