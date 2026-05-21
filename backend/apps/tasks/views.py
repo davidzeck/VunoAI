@@ -44,7 +44,7 @@ class TaskViewSet(viewsets.GenericViewSet):
         if intent_filter:
             qs = qs.filter(intent=intent_filter)
         if search:
-            qs = qs.filter(task_code__icontains=search) | qs.filter(customer_request__icontains=search)
+            qs = qs.filter(Q(task_code__icontains=search) | Q(customer_request__icontains=search))
 
         serializer = TaskListSerializer(qs, many=True)
         return Response(serializer.data)
