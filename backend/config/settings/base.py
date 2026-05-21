@@ -91,6 +91,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
+    # Stateless REST API — no session authentication.
+    # Without this, DRF's SessionAuthentication enforces CSRF when a Django admin
+    # session cookie is present, blocking all POST requests from the JS frontend.
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
     ],
