@@ -35,35 +35,48 @@ def auto_escalate_stale():
 
 @shared_task
 def rescore_pending():
-    """Re-run risk engine on pending send_money tasks with amount > 100k."""
+    """
+    Re-run risk engine on pending/in_progress tasks that warrant re-evaluation:
+    - send_money tasks with amount > 100k (amount-driven risk may have changed)
+    - verify_document tasks (document_subtype now extracted — rules are richer)
+    confidence is intentionally omitted → calculate_risk defaults it to 1.0.
+    """
     from services.risk_engine import calculate_risk
 
     tasks = Task.objects.filter(
-        intent="send_money",
+        intent__in=["send_money", "verify_document"],
         status__in=[Task.Status.PENDING, Task.Status.IN_PROGRESS],
     )
     rescored = 0
     for task in tasks:
-        try:
-            amount = float(task.entities.get("amount", 0))
-        except (TypeError, ValueError):
-            continue
-        if amount > 100_000:
-            result = calculate_risk({
-                **task.entities,
-                "intent": task.intent,
-                "urgency_level": task.urgency_level,
-            })
-            task.risk_score          = result["risk_score"]
-            task.risk_level          = result["risk_level"]
-            task.risk_flags          = result["risk_flags"]
-            task.risk_explanation    = result["risk_explanation"]
-            task.escalation_required = result["escalation_required"]
-            task.save(update_fields=[
-                "risk_score", "risk_level", "risk_flags",
-                "risk_explanation", "escalation_required", "updated_at",
-            ])
-            rescored += 1
+        # For send_money: skip low-amount tasks that can't trigger elevated rules
+        if task.intent == "send_money":
+            try:
+                amount = float(task.entities.get("amount", 0) or 0)
+            except (TypeError, ValueError):
+                continue
+            if amount <= 100_000:
+                continue
+
+        # confidence omitted — calculate_risk defaults to 1.0 for rescore path
+        result = calculate_risk({
+            **task.entities,
+            "intent":        task.intent,
+            "urgency_level": task.urgency_level,
+        })
+        task.risk_score          = result["risk_score"]
+        task.risk_level          = result["risk_level"]
+        task.risk_flags          = result["risk_flags"]
+        task.risk_explanation    = result["risk_explanation"]
+        task.escalation_required = result["escalation_required"]
+        task.save(update_fields=[
+            "risk_score", "risk_level", "risk_flags",
+            "risk_explanation", "escalation_required", "updated_at",
+        ])
+        log.info("task_rescored", task_code=task.task_code,
+                 score=result["risk_score"], level=result["risk_level"])
+        rescored += 1
+
     log.info("rescore_complete", rescored=rescored)
     return {"rescored": rescored}
 

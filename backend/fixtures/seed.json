@@ -16,6 +16,7 @@
       "urgency_level": "high",
       "ai_confidence": 0.95,
       "employee_assignment": "Finance Team",
+      "clarification_note": "",
       "error_detail": "",
       "created_at": "2026-05-19T08:15:00+03:00",
       "updated_at": "2026-05-19T08:15:03+03:00"
@@ -38,6 +39,7 @@
       "urgency_level": "medium",
       "ai_confidence": 0.88,
       "employee_assignment": "Legal & Compliance",
+      "clarification_note": "",
       "error_detail": "",
       "created_at": "2026-05-19T09:30:00+03:00",
       "updated_at": "2026-05-19T09:30:04+03:00"
@@ -60,6 +62,7 @@
       "urgency_level": "high",
       "ai_confidence": 0.92,
       "employee_assignment": "Field Operations",
+      "clarification_note": "",
       "error_detail": "",
       "created_at": "2026-05-19T10:45:00+03:00",
       "updated_at": "2026-05-19T10:45:02+03:00"
@@ -72,7 +75,7 @@
       "task_code": "VNH-2026-AT004",
       "customer_request": "My parents are arriving at JKIA on Friday, KQ101 from London, landing at 06:30. I need a vehicle for 3 passengers plus 4 large suitcases. They are elderly so please a comfortable ride to Westlands.",
       "intent": "airport_transfer",
-      "status": "pending",
+      "status": "in_progress",
       "risk_score": 5,
       "risk_level": "low",
       "risk_flags": [],
@@ -82,6 +85,7 @@
       "urgency_level": "medium",
       "ai_confidence": 0.97,
       "employee_assignment": "Logistics Team",
+      "clarification_note": "",
       "error_detail": "",
       "created_at": "2026-05-19T11:00:00+03:00",
       "updated_at": "2026-05-19T11:00:01+03:00"
@@ -104,77 +108,46 @@
       "urgency_level": "low",
       "ai_confidence": 0.99,
       "employee_assignment": "Customer Support",
+      "clarification_note": "",
       "error_detail": "",
       "created_at": "2026-05-19T12:00:00+03:00",
       "updated_at": "2026-05-19T12:00:02+03:00"
     }
   },
-  {
-    "model": "tasks.taskstep",
-    "pk": 1,
-    "fields": {"task": 100, "order": 1, "description": "Verify sender KYC and account standing", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 2,
-    "fields": {"task": 100, "order": 2, "description": "Confirm recipient mobile money details", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 3,
-    "fields": {"task": 100, "order": 3, "description": "Check transfer limits and compliance flags", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 4,
-    "fields": {"task": 100, "order": 4, "description": "Initiate M-Pesa disbursement to +254712345678", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 5,
-    "fields": {"task": 100, "order": 5, "description": "Send confirmation to customer via WhatsApp", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 6,
-    "fields": {"task": 101, "order": 1, "description": "Request original title deed from customer", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 7,
-    "fields": {"task": 101, "order": 2, "description": "Submit search request to Lands Registry Nakuru", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 8,
-    "fields": {"task": 101, "order": 3, "description": "Verify title against encumbrance register", "completed": false}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 9,
-    "fields": {"task": 101, "order": 4, "description": "Escalate findings to Legal & Compliance officer", "completed": false}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 10,
-    "fields": {"task": 102, "order": 1, "description": "Identify available plumbers in Nyali area", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 11,
-    "fields": {"task": 102, "order": 2, "description": "Confirm technician availability within 2-hour window", "completed": true}
-  },
-  {
-    "model": "tasks.taskstep",
-    "pk": 12,
-    "fields": {"task": 102, "order": 3, "description": "Dispatch plumber — Kariuki Plumbing, ETA 45 mins", "completed": false}
-  },
+
+  {"model": "tasks.taskstep", "pk": 1,  "fields": {"task": 100, "order": 1, "description": "Verify sender KYC and account standing", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 2,  "fields": {"task": 100, "order": 2, "description": "Confirm recipient mobile money details", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 3,  "fields": {"task": 100, "order": 3, "description": "Check transfer limits and compliance flags", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 4,  "fields": {"task": 100, "order": 4, "description": "Initiate M-Pesa disbursement to +254712345678", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 5,  "fields": {"task": 100, "order": 5, "description": "Send confirmation to customer via WhatsApp", "completed": true}},
+
+  {"model": "tasks.taskstep", "pk": 6,  "fields": {"task": 101, "order": 1, "description": "Request original title deed from customer", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 7,  "fields": {"task": 101, "order": 2, "description": "Submit search request to Lands Registry Nakuru", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 8,  "fields": {"task": 101, "order": 3, "description": "Verify title against encumbrance register", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 9,  "fields": {"task": 101, "order": 4, "description": "Escalate findings to Legal & Compliance officer for sign-off", "completed": true}},
+
+  {"model": "tasks.taskstep", "pk": 10, "fields": {"task": 102, "order": 1, "description": "Identify available plumbers in Nyali area", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 11, "fields": {"task": 102, "order": 2, "description": "Confirm technician availability within 2-hour window", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 12, "fields": {"task": 102, "order": 3, "description": "Dispatch plumber — Kariuki Plumbing, ETA 45 mins", "completed": false}},
+
+  {"model": "tasks.taskstep", "pk": 13, "fields": {"task": 103, "order": 1, "description": "Confirm flight details and arrival terminal with customer", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 14, "fields": {"task": 103, "order": 2, "description": "Allocate suitable vehicle for 3 passengers and 4 pieces of luggage", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 15, "fields": {"task": 103, "order": 3, "description": "Brief driver on elderly passenger requirements and luggage handling", "completed": false}},
+  {"model": "tasks.taskstep", "pk": 16, "fields": {"task": 103, "order": 4, "description": "Send driver name, photo, and vehicle plate to customer via WhatsApp", "completed": false}},
+  {"model": "tasks.taskstep", "pk": 17, "fields": {"task": 103, "order": 5, "description": "Confirm safe drop-off and collect payment confirmation", "completed": false}},
+
+  {"model": "tasks.taskstep", "pk": 18, "fields": {"task": 104, "order": 1, "description": "Retrieve current USD/KES and GBP/KES exchange rates from live feed", "completed": true}},
+  {"model": "tasks.taskstep", "pk": 19, "fields": {"task": 104, "order": 2, "description": "Pull account balance and confirm last transaction clearing date", "completed": true}},
+
   {
     "model": "tasks.generatedmessage",
     "pk": 1,
     "fields": {
       "task": 100,
       "channel": "whatsapp",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
       "content": "Hi! Your transfer of KES 15,000 to your mother in Kisumu has been processed successfully.\n\nTransaction reference: VNH-2026-SM001\nRecipient will receive funds via M-Pesa within 5 minutes.\n\nIs there anything else we can help you with?"
     }
   },
@@ -184,6 +157,9 @@
     "fields": {
       "task": 100,
       "channel": "email",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
       "content": "Dear Valued Customer,\n\nWe are pleased to confirm that your money transfer request has been successfully processed.\n\nTransaction Details:\n- Amount: KES 15,000\n- Recipient: Your mother, Kisumu\n- Reference: VNH-2026-SM001\n- Estimated delivery: Within 5 minutes via M-Pesa\n\nIf you have any questions or concerns, please do not hesitate to contact our support team.\n\nWarm regards,\nVunoh Financial Services"
     }
   },
@@ -193,9 +169,157 @@
     "fields": {
       "task": 100,
       "channel": "sms",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
       "content": "Vunoh: KES 15,000 sent to Kisumu. Ref VNH-2026-SM001. M-Pesa delivery in 5 mins. Help: 0800-VUNOH"
     }
   },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 4,
+    "fields": {
+      "task": 101,
+      "channel": "whatsapp",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Hi! We've received your request to verify land title NKR/TATU/4521 in Nakuru. ⚠️ Due to its complexity, this has been escalated to our Legal & Compliance team.\n\nExpected turnaround: 2–3 business days.\nRef: VNH-2026-VD002\n\nWe'll update you as soon as we have a result."
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 5,
+    "fields": {
+      "task": 101,
+      "channel": "email",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Dear Valued Customer,\n\nThank you for submitting your document verification request.\n\nVerification Details:\n- Document: Land Title NKR/TATU/4521\n- Location: Nakuru, Kenya\n- Reference: VNH-2026-VD002\n- Assigned Team: Legal & Compliance\n\nDue to the complexity of this land title verification, our Legal & Compliance team has been assigned to handle your request personally. You can expect a detailed update within 2–3 business days.\n\nIf you have supporting documents or additional information, please reply to this email at your earliest convenience.\n\nWarm regards,\nVunoh Financial Services"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 6,
+    "fields": {
+      "task": 101,
+      "channel": "sms",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Vunoh: Title NKR/TATU/4521 escalated to Legal. ETA 2-3 days. Ref VNH-2026-VD002."
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 7,
+    "fields": {
+      "task": 102,
+      "channel": "whatsapp",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Hey! 🔧 We've got your plumber request for Nyali, Mombasa. A verified technician is being dispatched — estimated arrival in 45 minutes.\n\nYou'll receive the plumber's contact details shortly.\nRef: VNH-2026-HS003\n\nStay safe and keep the area clear of water if possible!"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 8,
+    "fields": {
+      "task": 102,
+      "channel": "email",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Dear Valued Customer,\n\nYour service request has been confirmed and a technician dispatched.\n\nService Details:\n- Service Type: Emergency Plumbing\n- Location: Nyali, Mombasa\n- Reference: VNH-2026-HS003\n- Estimated Arrival: 45 minutes\n- Assigned: Kariuki Plumbing Services\n\nOur Operations team will share the technician's direct contact number within the next 10 minutes. Payment is processed after service completion.\n\nWarm regards,\nVunoh Operations Team"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 9,
+    "fields": {
+      "task": 102,
+      "channel": "sms",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Vunoh: Plumber dispatched to Nyali, Mombasa. ETA 45min. Contact coming. Ref VNH-2026-HS003."
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 10,
+    "fields": {
+      "task": 103,
+      "channel": "whatsapp",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Hello! ✈️ Your JKIA airport transfer is confirmed for 3 passengers + 4 bags.\n\nDriver: James Mwangi\nVehicle: Toyota Hiace — KBZ 412X\nPickup: Arrivals Terminal 1A\nETA to vehicle: 15 min after landing\n\nRef: VNH-2026-AT004. Safe travels to your parents!"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 11,
+    "fields": {
+      "task": 103,
+      "channel": "email",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Dear Valued Customer,\n\nYour airport transfer request has been confirmed and a driver assigned.\n\nTransfer Details:\n- Pickup Point: JKIA Terminal 1A, International Arrivals\n- Flight: KQ101 from London (landing 06:30)\n- Passengers: 3 (including elderly travellers)\n- Luggage: 4 large pieces\n- Vehicle: Toyota Hiace — Plate KBZ 412X\n- Driver: James Mwangi (+254 722 000 001)\n- Reference: VNH-2026-AT004\n\nYour driver will be positioned at the arrivals gate holding a Vunoh placard. Please allow 15 minutes after landing for driver positioning. The vehicle is fully air-conditioned and spacious for your parents' comfort.\n\nWarm regards,\nVunoh Operations Team"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 12,
+    "fields": {
+      "task": 103,
+      "channel": "sms",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Vunoh: Transfer confirmed. Driver James, Toyota KBZ 412X, JKIA T1A Arrivals. Ref VNH-2026-AT004."
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 13,
+    "fields": {
+      "task": 104,
+      "channel": "whatsapp",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Hi! Here's your account summary as of today:\n\n💰 Balance: KES 47,320.00\n📈 GBP/KES: 163.80 | USD/KES: 129.40\n📅 Last transaction cleared: 20 May 2026\n\nRef: VNH-2026-GI005. Anything else I can help with?"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 14,
+    "fields": {
+      "task": 104,
+      "channel": "email",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Dear Valued Customer,\n\nPlease find your account summary as requested.\n\nAccount Information:\n- Current Balance: KES 47,320.00\n- Last Transaction Cleared: 20 May 2026\n\nCurrent Exchange Rates (live as of today):\n- GBP to KES: 163.80\n- USD to KES: 129.40\n- EUR to KES: 140.20\n\nReference: VNH-2026-GI005\n\nRates are indicative and subject to change at the time of transaction. For further enquiries, please contact our support team.\n\nWarm regards,\nVunoh Financial Services"
+    }
+  },
+  {
+    "model": "tasks.generatedmessage",
+    "pk": 15,
+    "fields": {
+      "task": 104,
+      "channel": "sms",
+      "recipient": "",
+      "sent_at": null,
+      "send_error": "",
+      "content": "Vunoh: Bal KES 47,320. GBP/KES 163.80, USD/KES 129.40. Last txn 20 May. Ref VNH-2026-GI005."
+    }
+  },
+
   {
     "model": "tasks.statushistory",
     "pk": 1,
@@ -238,6 +362,50 @@
       "to_status": "completed",
       "note": "Escalated to Legal & Compliance for manual review.",
       "changed_at": "2026-05-19T09:30:04+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 5,
+    "fields": {
+      "task": 102,
+      "from_status": "pending",
+      "to_status": "in_progress",
+      "note": "AI pipeline started",
+      "changed_at": "2026-05-19T10:45:01+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 6,
+    "fields": {
+      "task": 103,
+      "from_status": "pending",
+      "to_status": "in_progress",
+      "note": "Driver allocation in progress",
+      "changed_at": "2026-05-19T11:00:02+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 7,
+    "fields": {
+      "task": 104,
+      "from_status": "pending",
+      "to_status": "in_progress",
+      "note": "AI pipeline started",
+      "changed_at": "2026-05-19T12:00:01+03:00"
+    }
+  },
+  {
+    "model": "tasks.statushistory",
+    "pk": 8,
+    "fields": {
+      "task": 104,
+      "from_status": "in_progress",
+      "to_status": "completed",
+      "note": "Account summary and exchange rates delivered.",
+      "changed_at": "2026-05-19T12:00:02+03:00"
     }
   }
 ]

@@ -56,6 +56,11 @@ class TaskViewSet(viewsets.GenericViewSet):
                 {"error": "customer_request is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if len(customer_request) > 2000:
+            return Response(
+                {"error": "customer_request must be 2000 characters or fewer."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         task = _get_task_service().initiate(customer_request)
         return Response(
             {
