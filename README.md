@@ -237,76 +237,110 @@ Stage 0 scope check rejects non-Vunoh requests before any expensive pipeline wor
 
 ### Prerequisites
 - Python 3.11+
-- PostgreSQL (Postgres.app on Mac: runs on port 5433)
-- Redis
-- A `.env` file in `backend/` (see `.env.example`)
+- PostgreSQL running locally (Postgres.app on Mac, or Homebrew)
+- Redis running locally (`brew services start redis` / `redis-server`)
+- API keys for Groq and Gemini (both free tier)
 
-### 1. Python environment
+---
+
+### Option A — Automated (one command)
+
 ```bash
-python3.11 -m venv .venv
+bash setup.sh
+```
+
+The script handles everything: creates the virtual environment, installs dependencies, copies `.env.example` to `.env`, creates the Postgres database and user, runs migrations, and loads 5 sample tasks. Then jump straight to [filling in your API keys](#api-keys) and [starting the services](#start-services).
+
+> **Postgres.app users:** the script assumes port 5432. If your Postgres runs on 5433, open `backend/.env` after the script and set `DB_PORT=5433`, then run `cd backend && python manage.py migrate` once more.
+
+---
+
+### Option B — Manual steps
+
+**1. Virtual environment**
+```bash
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
 ```
 
-### 2. Environment variables
-Copy `backend/.env.example` to `backend/.env` and fill in:
-```
-DJANGO_SECRET_KEY=<generate with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())">
-DJANGO_DEBUG=True
-DB_NAME=vunoh
-DB_USER=vunoh_user
-DB_PASSWORD=vunoh_pass
-DB_HOST=localhost
-DB_PORT=5433
-REDIS_URL=redis://localhost:6379/1
-GROQ_API_KEY=<from console.groq.com>
-GEMINI_API_KEY=<from aistudio.google.com>
-TWILIO_ACCOUNT_SID=<from console.twilio.com>
-TWILIO_AUTH_TOKEN=<from console.twilio.com>
-TWILIO_WHATSAPP_FROM=+14155238886
-EMAIL_HOST_USER=<your gmail>
-EMAIL_HOST_PASSWORD=<16-char app password>
+**2. Environment file**
+```bash
+cp backend/.env.example backend/.env
+# Open backend/.env and fill in your keys (see table below)
 ```
 
-### 3. Database
+**3. Database**
 ```bash
-# Create user and database (adjust for your Postgres setup)
-psql -U postgres -p 5433 -c "CREATE USER vunoh_user WITH PASSWORD 'vunoh_pass';"
-psql -U postgres -p 5433 -c "CREATE DATABASE vunoh OWNER vunoh_user;"
+# Adjust -p port and -U superuser for your Postgres install
+psql -U postgres -p 5432 -c "CREATE USER vunoh_user WITH PASSWORD 'vunoh_pass';"
+psql -U postgres -p 5432 -c "CREATE DATABASE vunoh OWNER vunoh_user;"
 
 cd backend
 python manage.py migrate
-python manage.py createsuperuser
-python manage.py loaddata fixtures/seed.json
+python manage.py loaddata fixtures/seed.json   # loads 5 sample tasks
+cd ..
 ```
 
-### 4. Start services
+**Alternatively**, restore the full SQL dump (44 tasks, all data):
 ```bash
-# Terminal 1 — Django
-cd backend
-python manage.py runserver
-
-# Terminal 2 — Celery worker
-cd backend
-celery -A config.celery worker --loglevel=info
-
-# Terminal 3 — Celery Beat (scheduled jobs)
-cd backend
-celery -A config.celery beat --loglevel=info
+psql -U vunoh_user -p 5432 vunoh < backend/fixtures/sqlDump/schema.sql
 ```
 
-### 5. Access points
+---
+
+### API keys
+
+Open `backend/.env` and fill in:
+
+| Key | Where to get it | Required? |
+|-----|----------------|-----------|
+| `DJANGO_SECRET_KEY` | Run: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` | Yes |
+| `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) — free | Yes |
+| `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com) — free | Yes (fallback AI) |
+| `TWILIO_*` | [console.twilio.com](https://console.twilio.com) | No — message sending only |
+| `EMAIL_HOST_*` | Gmail App Password | No — email sending only |
+
+The app works fully without Twilio and Gmail — messages are generated and stored, just not delivered.
+
+---
+
+### Start services
+
+Three terminals from the project root:
+
+```bash
+# Terminal 1 — Django REST API (port 8000)
+source .venv/bin/activate && cd backend && python manage.py runserver
+
+# Terminal 2 — Celery worker (runs the AI pipeline async)
+source .venv/bin/activate && cd backend && celery -A config.celery worker --loglevel=info
+
+# Terminal 3 — Frontend
+npx live-server frontend --port=5500
+# or open frontend/index.html with the VS Code Live Server extension
+```
+
+Then open **[http://localhost:5500](http://localhost:5500)**
+
+---
+
+### Access points
+
 | URL | What |
 |-----|------|
-| `http://localhost:5500` | Frontend (open with Live Server or file server) |
-| `http://localhost:8000/api/tasks/` | REST API (browsable) |
+| `http://localhost:5500` | Frontend — submit requests, view dashboard, manage tasks |
+| `http://localhost:8000/api/tasks/` | REST API (DRF browsable interface) |
 | `http://localhost:8000/admin/` | Django admin |
 
-### 6. Restore from SQL dump
-To restore the full schema and seed data on a fresh Postgres instance:
-```bash
-psql -U vunoh_user -h localhost -p 5433 vunoh < backend/fixtures/schema.sql
-```
+---
+
+### Sample data
+
+| File | What it contains |
+|------|-----------------|
+| `backend/fixtures/seed.json` | 5 tasks covering all intents — loaded automatically by `setup.sh` or manually via `python manage.py loaddata fixtures/seed.json` |
+| `backend/fixtures/sqlDump/schema.sql` | Full PostgreSQL dump: schema + 44 tasks with all related records (steps, messages, entities, risk scores, history) |
 
 ---
 
