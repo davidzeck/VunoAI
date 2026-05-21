@@ -1,14 +1,14 @@
 # Vunoh AI — Operations Platform
 
-> A production-grade AI-powered operational assistant for diaspora users. Built as a senior-level internship practical test.
+> A production grade AI powered operational assistant for diaspora users.
 
 ---
 
 ## Project Overview
 
-Vunoh is an internal operations platform that converts natural language customer requests into structured, tracked, and fulfilled operational workflows. It targets diaspora users — Kenyans abroad managing money transfers, document verification, service hiring, and travel logistics back home.
+Vunoh is an internal operations platform that converts natural language customer requests into structured, tracked, and fulfilled operational workflows. It targets diaspora users Kenyans abroad managing money transfers, document verification, service hiring, and travel logistics back home.
 
-The system is deliberately **not a chatbot**. It is an operational workflow engine that happens to use AI as an understanding layer. The output is structured data: risk scores, assigned teams, workflow steps, and multi-channel customer messages — all persisted to a database and tracked through a lifecycle.
+The system is deliberately **not a chatbot**. It is an operational workflow engine that happens to use AI as an understanding layer. The output is structured data: risk scores, assigned teams, workflow steps, and multi-channel customer messages all persisted to a database and tracked through a lifecycle.
 
 **What a request looks like end-to-end:**
 
@@ -99,7 +99,7 @@ Before anything expensive runs, one fast AI call checks whether the request fall
 Extracts structured intent data: intent type, confidence (0–1), urgency level, and key entities (amount, recipient, location, document type, etc.). Uses Pydantic v2 for schema validation — if the AI returns malformed JSON, `parse_with_retry` retries up to 3 times with exponential backoff before failing.
 
 ### Stage 2 — Risk Scoring
-**Deterministic, not AI-generated.** See the dedicated section below.
+**Deterministic, not AI-generated.** See the [Risk Scoring Logic](#risk-scoring-logic) section below.
 
 ### Stage 3 — Workflow Generation
 Generates 4–7 imperative operational steps for the specific intent and context. Temperature is set to `0.1` for consistency — workflows should be deterministic and professional, not creative.
